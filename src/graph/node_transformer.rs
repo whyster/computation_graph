@@ -145,6 +145,8 @@ mod transformer_tests {
     use recursion::{Collapsible, Expandable};
     use crate::operations::BooleanOperation;
     use super::*;
+    use anyhow::Context;
+    use crate::graph::structure_key::{StructuralIdentifier, StructureKey};
 
     //
     //  Macro syntax should probably look like this:
@@ -177,7 +179,7 @@ mod transformer_tests {
     impl NodeTransformer for DefaultImplementor {}
     
     #[test]
-    fn default_implementation_does_not_mutate_structure() {
+    fn default_implementation_does_not_mutate_structure() -> anyhow::Result<()> {
         let macro_graph: BoxedNode = bool_op!(BooleanOperation::And, 
             bool_const!(true),
             bool_op!(BooleanOperation::Or,
@@ -185,18 +187,13 @@ mod transformer_tests {
                 bool_const!(true)
             )
         );
+        let expected_structure = macro_graph.clone().get_structure_key();
         let mut default_implementor = DefaultImplementor {};
         
         let result = default_implementor.transform_node(macro_graph);
-        
-        
-        assert!(false)
-        
-        // let graph: BoxedNode = BoxedNode {
-        //     data: NodeFrame::BoolOp(BoolOp {
-        //         operator: BooleanOperation::And,
-        //         operands: vec![Box::new(BoxedNode{ data: NodeFrame::BooleanConstant(true)})]
-        //     }),
-        // };
+
+        let actual_structure = result.context("should be something")?.get_structure_key();
+        assert_eq!(expected_structure, actual_structure);
+        Ok(())
     }
 }
