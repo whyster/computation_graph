@@ -1,5 +1,6 @@
 use std::ops::Deref;
 use recursion::{Collapsible, CollapsibleExt, Expandable, MappableFrame, PartiallyApplied};
+use crate::computing::{Computable, ComputingDomain};
 use crate::graph::node_frame::{BinOp, UnaryOp, NodeFrame, BoolOp, Compare, If};
 use crate::graph::structure_key::StructureKey;
 
@@ -14,6 +15,12 @@ impl BoxedNode {
            StructureKey::from_frame(x)
         });
         x
+    }
+}
+
+impl Computable for BoxedNode {
+    fn get_domain(&self) -> ComputingDomain {
+        self.data.get_domain()
     }
 }
 

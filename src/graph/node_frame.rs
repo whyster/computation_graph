@@ -1,48 +1,117 @@
 use recursion::{MappableFrame, PartiallyApplied};
+use crate::computing::{Computable, ComputingDomain};
 use crate::operations;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FunctionParameter {
     pub identifier: String,
 }
+impl Computable for FunctionParameter {
+    fn get_domain(&self) -> ComputingDomain {
+        ComputingDomain::Quantum
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct BitVec {
     pub length: usize,
     pub bit_string: String,
 }
+
+impl Computable for BitVec {
+    fn get_domain(&self) -> ComputingDomain {
+        ComputingDomain::Quantum
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct BinOp<T> {
     pub operation: operations::BinaryOperation,
     pub left: T,
     pub right: T,
 }
+impl<T: Computable> Computable for BinOp<T> {
+    fn get_domain(&self) -> ComputingDomain {
+        self.left.get_domain().compare(&self.right.get_domain())
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct UnaryOp<T> {
     pub operation: operations::UnaryOperation,
     pub operand: T,
 }
+
+impl<T: Computable> Computable for UnaryOp<T> {
+    fn get_domain(&self) -> ComputingDomain {
+        self.operand.get_domain()
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct BoolOp<U> {
     pub operator: operations::BooleanOperation,
     pub operands: U
 }
+
+impl<U: Computable> Computable for BoolOp<U> {
+    fn get_domain(&self) -> ComputingDomain {
+        self.operands.get_domain()
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Compare<T, U> {
     pub left: T,
     pub operations: Vec<operations::ComparisonOperation>,
     pub comparators: U
 }
+
+impl<T: Computable, U: Computable> Computable for Compare<T, U> {
+    fn get_domain(&self) -> ComputingDomain {
+        self.left.get_domain().compare(&self.comparators.get_domain())
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct If<T> {
     pub condition: T,
     pub success: T,
     pub failure: T,
 }
+
+impl<T: Computable> Computable for If<T> {
+    fn get_domain(&self) -> ComputingDomain {
+        self.condition.get_domain()
+            .compare(&self.success.get_domain())
+            .compare(&self.failure.get_domain())
+    }
+}
+
 #[derive(Debug, PartialEq, Clone)]
 pub enum Numeric {
     Double(f64),
     Int(i32),
 }
+
+impl Computable for Numeric {
+    fn get_domain(&self) -> ComputingDomain {
+        ComputingDomain::Classical
+    }
+}
+
+impl Computable for bool {
+    fn get_domain(&self) -> ComputingDomain {
+        ComputingDomain::Classical
+    }
+}
+
+impl Computable for String {
+    fn get_domain(&self) -> ComputingDomain {
+        ComputingDomain::Classical
+    }
+}
+
 #[derive(Debug, Clone)]
 pub enum NodeFrame<T> {
     FunctionParameter(FunctionParameter),
@@ -55,6 +124,23 @@ pub enum NodeFrame<T> {
     BoolOp(BoolOp<Vec<T>>),
     Compare(Compare<T, Vec<T>>),
     If(If<T>),
+}
+
+impl<T: Computable> Computable for NodeFrame<T> {
+    fn get_domain(&self) -> ComputingDomain {
+        match self {
+            NodeFrame::FunctionParameter(f) => f.get_domain(),
+            NodeFrame::NumericConstant(n) => n.get_domain(),
+            NodeFrame::StringConstant(s) => s.get_domain(),
+            NodeFrame::BooleanConstant(b) => b.get_domain(),
+            NodeFrame::BitVec(bv) => bv.get_domain(),
+            NodeFrame::BinOp(bin) => bin.get_domain(),
+            NodeFrame::UnaryOp(unary) => unary.get_domain(),
+            NodeFrame::BoolOp(bool_op) => bool_op.get_domain(),
+            NodeFrame::Compare(cmp) => cmp.get_domain(),
+            NodeFrame::If(if_node) => if_node.get_domain(),
+        }
+    }
 }
 
 
