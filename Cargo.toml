@@ -1,0 +1,7 @@
+[package]
+name = "computation_graph"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+recursion = "0.5.4"
