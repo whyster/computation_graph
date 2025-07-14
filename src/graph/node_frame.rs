@@ -1,40 +1,49 @@
 use recursion::{MappableFrame, PartiallyApplied};
 use crate::operations;
 
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FunctionParameter {
     pub identifier: String,
 }
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct BitVec {
     pub length: usize,
     pub bit_string: String,
 }
+#[derive(Debug, Clone)]
 pub struct BinOp<T> {
     pub operation: operations::BinaryOperation,
     pub left: T,
     pub right: T,
 }
+#[derive(Debug, Clone)]
 pub struct UnaryOp<T> {
     pub operation: operations::UnaryOperation,
     pub operand: T,
 }
+#[derive(Debug, Clone)]
 pub struct BoolOp<U> {
     pub operator: operations::BooleanOperation,
     pub operands: U
 }
+#[derive(Debug, Clone)]
 pub struct Compare<T, U> {
     pub left: T,
     pub operations: Vec<operations::ComparisonOperation>,
     pub comparators: U
 }
+#[derive(Debug, Clone)]
 pub struct If<T> {
     pub condition: T,
     pub success: T,
     pub failure: T,
 }
+#[derive(Debug, PartialEq, Clone)]
 pub enum Numeric {
     Double(f64),
     Int(i32),
 }
+#[derive(Debug, Clone)]
 pub enum NodeFrame<T> {
     FunctionParameter(FunctionParameter),
     NumericConstant(Numeric),

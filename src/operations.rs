@@ -1,5 +1,5 @@
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum BinaryOperation { 
     Add,
     Subtract,
@@ -12,13 +12,13 @@ pub enum BinaryOperation {
     BitwiseXor,
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum BooleanOperation {
     And,
     Or
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum UnaryOperation {
     Not,
     Invert,
@@ -26,7 +26,7 @@ pub enum UnaryOperation {
     UnaryMinus,
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum ComparisonOperation {
     Equal,
     GreaterThan,

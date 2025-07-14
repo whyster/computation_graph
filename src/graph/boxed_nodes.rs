@@ -1,12 +1,21 @@
 use std::ops::Deref;
-use recursion::{Collapsible, Expandable, MappableFrame, PartiallyApplied};
+use recursion::{Collapsible, CollapsibleExt, Expandable, MappableFrame, PartiallyApplied};
 use crate::graph::node_frame::{BinOp, UnaryOp, NodeFrame, BoolOp, Compare, If};
+use crate::graph::structure_key::StructureKey;
 
+#[derive(Debug, Clone)]
 pub struct BoxedNode {
     pub data: NodeFrame<Box<BoxedNode>>,
 }
 
-
+impl BoxedNode {
+    pub fn get_structure_key(self) -> StructureKey {
+        let x = self.collapse_frames(|x| {
+           StructureKey::from_frame(x)
+        });
+        x
+    }
+}
 
 
 impl Expandable for BoxedNode {
