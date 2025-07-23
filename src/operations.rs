@@ -46,6 +46,17 @@ pub enum BooleanOperation {
     Or
 }
 
+impl BooleanOperation {
+    pub fn perform(&self, left: bool, right: bool) -> bool
+    {
+        match self {
+            BooleanOperation::And => left && right,
+            BooleanOperation::Or => left || right,
+        }
+    }
+
+}
+
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub enum UnaryOperation {
     Not,
